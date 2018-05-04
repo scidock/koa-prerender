@@ -1,6 +1,4 @@
-# koa-prerender [![Build Status](https://travis-ci.org/RisingStack/koa-prerender.svg)](https://travis-ci.org/RisingStack/koa-prerender)
-
-[![NPM](https://nodei.co/npm/koa-prerender.png)](https://nodei.co/npm/koa-prerender/)
+# koa-prerender [![Build Status](https://travis-ci.org/scidock/koa-prerender.svg)](https://travis-ci.org/scidock/koa-prerender)
 
 **KOA middleware for prerendering javascript-rendered pages on the fly for SEO**
 
@@ -12,14 +10,6 @@ This [koa](https://koajs.com) middleware intercepts requests to your Node.js web
 ### Prerequisites
 
 Install [Prerender](https://github.com/prerender/prerender) on a server of your choice.
-
-### Install
-
-Install the [package](https://npmjs.org/package/koa-prerender) with [npm](https://npmjs.org):
-
-```sh
-$ npm install koa-prerender
-```
 
 ### Usage
 
