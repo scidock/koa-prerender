@@ -121,23 +121,20 @@ function preRenderMiddleware(options) {
     const protocol = options.protocol || ctx.protocol;
     const host = options.host || ctx.host || ctx.get('X-Forwarded-Host');
     const userAgent = ctx.get('User-Agent');
-    const {method, url} = ctx;
 
-    const isPreRender = shouldPreRender({
-      userAgent,
+    if (shouldPreRender({
       bufferAgent: ctx.get('X-Bufferbot'),
-      method,
-      url,
-    });
-
-    // Pre-render generate the site and return
-    if (isPreRender) {
+      method: ctx.method,
+      url: ctx.url,
+      userAgent,
+    })) {
       ctx.set('X-Prerender', 'true');
       const preRenderUrl = `${options.prerender}${protocol}://${host}${ctx.url}`;
       const headers = {
-        'User-Agent': ctx.get('User-Agent'),
+        'User-Agent': userAgent,
 	'X-Prerender-Token': options.prerenderToken || process.env.PRERENDER_TOKEN,
       };
+
       return fetch(preRenderUrl, {headers}).then((res) => {
         ctx.body = res.body;
       });
