@@ -1,6 +1,6 @@
 var prerender = require('./');
 var request = require('supertest');
-var koa = require('koa');
+var Koa = require('koa');
 var expect = require('chai').expect;
 
 describe('Koa prerender middleware', function() {
@@ -13,7 +13,7 @@ describe('Koa prerender middleware', function() {
   describe('prerenders when', function() {
 
     it('url contains _escaped_fragment_', function (done) {
-      var app = koa();
+      var app = Koa();
 
       app.use(prerender());
 
@@ -24,7 +24,7 @@ describe('Koa prerender middleware', function() {
     });
 
     it('user-agent looks like a bot', function (done) {
-      var app = koa();
+      var app = new Koa();
 
       app.use(prerender());
 
@@ -36,7 +36,7 @@ describe('Koa prerender middleware', function() {
     });
 
     it('x-bufferbot is set in options', function (done) {
-      var app = koa();
+      var app = new Koa();
 
       app.use(prerender());
 
