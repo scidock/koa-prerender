@@ -33,7 +33,7 @@ const crawlerUserAgents = [
   'pinterestbot',
   'Bitrix link preview',
   'XING-contenttabreceiver',
-].map(toLowerCase);
+].map(str => str.toLowerCase());
 
 const extensionsToIgnore = [
   '.js',
