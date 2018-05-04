@@ -6,7 +6,7 @@
     "test": "mocha test.js --harmony --reporter spec"
   },
   "author": "Gergely Nemeth <mail@nemethgergely.com> (http://twitter.com/nthgergo)",
-  "contributors": ["SciDock LLC <cloudonaut@scidock.com>"],
+  "contributors": ["SciDock LLC <cloudonaut@scidock.com> (https://scidock.com)"],
   "license": "ISC",
   "dependencies": {
     "isomorphic-fetch": "2.2.1"
