@@ -136,6 +136,7 @@ function preRenderMiddleware(options) {
       };
 
       return fetch(preRenderUrl, {headers}).then((res) => {
+	ctx.res.writeHead(200, {'Content-Type': 'text/html'});
         ctx.body = res.body;
       });
     }
