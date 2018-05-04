@@ -9,8 +9,7 @@
   "contributors": ["SciDock LLC <cloudonaut@scidock.com>"],
   "license": "ISC",
   "dependencies": {
-    "request": "^2.85.0",
-    "thunkify-wrap": "^1.0.4"
+    "isomorphic-fetch": "2.2.1"
   },
   "devDependencies": {
     "chai": "^4.1.2",

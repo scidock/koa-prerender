@@ -1,18 +1,11 @@
-/*
- * @module koa-prerender
- *
+/**
  * @author Peter Marton, Gergely Nemeth, SciDock LLC
  */
 
-var url = require('url');
+const fetch = require('isomorphic-fetch');
+const url = require('url');
 
-var request = require('request');
-var thunkify = require('thunkify-wrap');
-
-// Turn callback into a thunk
-var requestGet = thunkify(request.get);
-
-var crawlerUserAgents = [
+const crawlerUserAgents = [
   'baiduspider',
   'facebookexternalhit',
   'twitterbot',
@@ -38,12 +31,12 @@ var crawlerUserAgents = [
   'Discordbot',
   'Google Page Speed',
   'Qwantify',
-	'pinterestbot',
+  'pinterestbot',
   'Bitrix link preview',
   'XING-contenttabreceiver',
-];
+].map(str => str.toLowerCase());
 
-var extensionsToIgnore = [
+const extensionsToIgnore = [
   '.js',
   '.css',
   '.xml',
@@ -87,113 +80,72 @@ var extensionsToIgnore = [
   '.svg',
 ];
 
-var DEFAULT_PRERENDER = 'http://service.prerender.io/';
-
-
 /*
- * Should pre-render?
- *
- * @method shouldPreRender
  * @param {Object} options
- * @return {Boolean}
+ * @return {boolean}
  */
-function shouldPreRender (options) {
-  var hasExtensionToIgnore = extensionsToIgnore.some(function (extension) {
-    return options.url.indexOf(extension) !== -1;
-  });
-
-  var isBot = crawlerUserAgents.some(function (crawlerUserAgent) {
-    return options.userAgent.toLowerCase().indexOf(crawlerUserAgent.toLowerCase()) !== -1;
-  });
-
-  // do not pre-rend when:
-  if (!options.userAgent) {
+function shouldPreRender(options) {
+  if (
+    options.method !== 'GET' && options.method !== 'HEAD' ||
+    !options.userAgent ||
+    extensionsToIgnore.some(extension => options.url.indexOf(extension) !== -1)
+  ) {
     return false;
   }
 
-  if (options.method !== 'GET') {
-    return false;
-  }
-
-  if (hasExtensionToIgnore) {
-    return false;
-  }
-
-  // do pre-render when:
-  var query = url.parse(options.url, true).query;
-  if (query && query['_escaped_fragment_'] !== undefined) {
+  const {query} = url.parse(options.url, true /* parseQueryString */);
+  if (
+    query && query['_escaped_fragment_'] != null ||
+    options.bufferAgent
+  ) {
     return true;
   }
 
-  if (options.bufferAgent) {
-    return true;
-  }
-
-  return isBot;
+  const userAgent = options.userAgent.toLowerCase();
+  return crawlerUserAgents.some(crawlerUserAgent => userAgent.indexOf(crawlerUserAgent) !== -1);
 }
 
 
 /*
- * Pre-render middleware
- *
- * @method preRenderMiddleware
  * @param {Object} options
  */
-module.exports = function preRenderMiddleware (options) {
+function preRenderMiddleware(options) {
   options = options || {};
-  options.prerender = options.prerender || DEFAULT_PRERENDER;
+  options.prerender = options.prerender || 'http://service.prerender.io/';
 
   /*
-   * Pre-render
-   *
-   * @method preRender
-   * @param {Generator} next
+   * @param {Object} ctx
+   * @param {Function} next
    */
-  return function *preRender(next) {
-    var protocol = options.protocol || this.protocol;
-    var host = options.host || this.host;
-    var headers = {
-      'User-Agent': this.accept.headers['user-agent']
-    };
+  return (ctx, next) => {
+    const protocol = options.protocol || ctx.protocol;
+    const host = options.host || ctx.host || ctx.get('X-Forwarded-Host');
+    const userAgent = ctx.get('User-Agent');
+    const {method, url} = ctx;
 
-    var prePreRenderToken = options.prerenderToken || process.env.PRERENDER_TOKEN;
-
-    if(prePreRenderToken) {
-      headers['X-Prerender-Token'] = prePreRenderToken;
-    }
-
-    var isPreRender = shouldPreRender({
-      userAgent: this.get('user-agent'),
-      bufferAgent: this.get('x-bufferbot'),
-      method: this.method,
-      url: this.url
+    const isPreRender = shouldPreRender({
+      userAgent,
+      bufferAgent: ctx.get('X-Bufferbot'),
+      method,
+      url,
     });
-
-    var body = '';
-
-    var renderUrl;
-    var preRenderUrl;
-    var response;
 
     // Pre-render generate the site and return
     if (isPreRender) {
-      renderUrl = protocol + '://' + host + this.url;
-      preRenderUrl = options.prerender + renderUrl;
-      response = yield requestGet({
-        url: preRenderUrl,
-        headers: headers,
-        gzip: true
+      ctx.set('X-Prerender', 'true');
+      const preRenderUrl = `${options.prerender}${protocol}://${host}${ctx.url}`;
+      const headers = {
+        'User-Agent': ctx.get('User-Agent'),
+	'X-Prerender-Token': options.prerenderToken || process.env.PRERENDER_TOKEN,
+      };
+      return fetch(preRenderUrl, {headers}).then((res) => {
+        ctx.body = res.body;
       });
-
-      body = response[1] || '';
-
-      yield* next;
-
-      this.body = body.toString();
-      this.set('X-Prerender', 'true');
-    } else {
-      yield* next;
-      this.set('X-Prerender', 'false');
     }
+	  
+    ctx.set('X-Prerender', 'false');
+    return next();
   };
 };
+
+module.exports = preRenderMiddleware;
