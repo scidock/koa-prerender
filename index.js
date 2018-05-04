@@ -1,7 +1,7 @@
 /*
  * @module koa-prerender
  *
- * @author Peter Marton, Gergely Nemeth
+ * @author Peter Marton, Gergely Nemeth, SciDock LLC
  */
 
 var url = require('url');
