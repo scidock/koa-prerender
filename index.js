@@ -3,6 +3,7 @@
  */
 
 const fetch = require('isomorphic-fetch');
+const url = require('url');
 
 const crawlerUserAgents = [
   'baiduspider',
