@@ -1,12 +1,12 @@
 {
   "name": "koa-prerender",
-  "version": "1.0.3",
-  "description": "",
+  "version": "1.1.0",
   "main": "index.js",
   "scripts": {
     "test": "mocha test.js --harmony --reporter spec"
   },
   "author": "Gergely Nemeth <mail@nemethgergely.com> (http://twitter.com/nthgergo)",
+  "contributors": ["SciDock LLC <cloudonaut@scidock.com>"],
   "license": "ISC",
   "dependencies": {
     "request": "^2.85.0",
