@@ -22,8 +22,25 @@ var crawlerUserAgents = [
   'quora link preview',
   'showyoubot',
   'outbrain',
-  'pinterest',
-  'developers.google.com/+/web/snippet'
+  'pinterest/0.',
+  'developers.google.com/+/web/snippet',
+  'slackbot',
+  'vkShare',
+  'W3C_Validator',
+  'redditbot',
+  'Applebot',
+  'WhatsApp',
+  'flipboard',
+  'tumblr',
+  'bitlybot',
+  'SkypeUriPreview',
+  'nuzzel',
+  'Discordbot',
+  'Google Page Speed',
+  'Qwantify',
+	'pinterestbot',
+  'Bitrix link preview',
+  'XING-contenttabreceiver',
 ];
 
 var extensionsToIgnore = [
@@ -64,7 +81,10 @@ var extensionsToIgnore = [
   '.iso',
   '.flv',
   '.m4v',
-  '.torrent'
+  '.torrent',
+  '.woff',
+  '.ttf',
+  '.svg',
 ];
 
 var DEFAULT_PRERENDER = 'http://service.prerender.io/';
