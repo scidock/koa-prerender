@@ -6,6 +6,8 @@ const fetch = require('isomorphic-fetch');
 const url = require('url');
 
 const crawlerUserAgents = [
+  'googlebot',
+  'bingbot',
   'baiduspider',
   'facebookexternalhit',
   'twitterbot',
